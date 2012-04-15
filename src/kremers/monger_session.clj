@@ -11,8 +11,8 @@
 (deftype MongodbStore [collection-name auto-key-change?]
   ringstore/SessionStore
   (read-session [_ key] (if (nil? key) {} 
-                (if-let [entity (mng/find-one-as-map collection-name {:_id key})]
-                  (read-string (:content entity)) {})))
+                (if-let [entity (mng/find-one-as-map collection-name {:_id key})] (do (println (str "!Read :" entity))
+                  (read-string (:content entity))) {})))
   (write-session [_ key data]
                  (do (println "writing data" (ser data)) 
                    (let  [data (zipmap (map #(if (and (keyword? %) (namespace %))
