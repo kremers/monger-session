@@ -2,6 +2,7 @@
   (:use [clojure.test]
 	[ring.middleware.session.store]
 	[kremers.monger-session]
+        [monger.collection :only [insert]]
         [monger.core :only [command connect! connect set-db! get-db]]
 ))
 
@@ -15,6 +16,10 @@
 )
 
 (use-fixtures :each server-fixture)
+
+(deftest mongoserializablekeywords
+  (let [data #=(clojure.lang.PersistentArrayMap/create {:_flash #=(clojure.lang.PersistentArrayMap/create {:login #=(clojure.lang.PersistentArrayMap/create {:form ["Username and password do not match!"], :form-data #=(clojure.lang.PersistentArrayMap/create {:roles #{:admin}})})}), :_id "6d591e4f-0967-4f30-b2c8-002a489f36e5", :_date #=(java.util.Date. 1334523330680), :_sandbar_session #=(clojure.lang.PersistentArrayMap/create {:auth-redirect-uri "/admin"})})]
+  (insert "test" data)))
 
 (deftest read-not-exist
   (let [store (mongodb-store)]
