@@ -36,7 +36,7 @@
 	sess-key* (write-session store sess-key {:bar "baz"})
 	entity    (read-session store sess-key*)]
     (is (= sess-key sess-key*))
-    (is (and (:_id entity) (:_date entity)))
+    (is (:_id entity))
     (is (= (dissoc entity :_id :_date)
 	   {:bar "baz"}))))
 
@@ -46,7 +46,8 @@
 	sess-key* (write-session store sess-key {:bar "baz"})
 	entity    (read-session store sess-key*)]
     (is (not= sess-key sess-key*))
-    (is (and (:_id entity) (:_date entity)))
+    (is (:_id entity))
+    ;(:_date entity)
     (is (= (dissoc entity :_id :_date)
 	   {:bar "baz"}))))
 
