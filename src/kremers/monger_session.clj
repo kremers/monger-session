@@ -9,7 +9,12 @@
                 (if-let [entity (mng/find-one-as-map collection-name {:_id key})]
                   entity {})))
   (write-session [_ key data]
-                 (let  [entity (if (nil? key) nil (mng/find-one-as-map collection-name {:_id key}))
+                 (do (println "writing data" data) 
+                   (let  [data (zipmap (map #(if (and (keyword? %) (namespace %))
+                             (-> % str (.substring 1)) %)
+                             (keys data))
+                             (vals data))
+                       entity (if (nil? key) nil (mng/find-one-as-map collection-name {:_id key}))
                        key-change? (or (= nil entity) auto-key-change?)
                        newkey (if key-change? (str (UUID/randomUUID)) key)]
                    (if entity
@@ -18,8 +23,8 @@
                                (mng/insert collection-name (assoc data :_id newkey :_date (:_date entity))))
                            (mng/update collection-name {:_id newkey} (assoc data :_date (:_date entity))))
                          newkey)
-                     (do (mng/insert collection-name (merge data { :_id newkey :_date (Date.) }))
-                         newkey))))
+                     (do (println ("new session with data: " data)) (mng/insert collection-name (merge data { :_id newkey :_date (Date.) }))
+                         newkey)))))
   (delete-session [_ key]
                   (mng/remove collection-name {:_id key})
                   nil)
