@@ -2,6 +2,8 @@
 
 monger-session use mongodb as a Clojure/Ring's http session storage.
 
+!clojure 1.4 is now required!
+
 ## Usage
 
 ## License

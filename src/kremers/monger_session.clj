@@ -6,19 +6,20 @@
 (defmethod clojure.core/print-dup java.util.Date [o w]
           (.write w (str "#=(java.util.Date. " (.getTime o) ")")))
 
-(defn ser [data] (str (binding [*print-dup* true] (prn-str data))))
+;(defn ser [data] (str (binding [*print-dup* true] (prn-str data))))
+(defn ser [data] (prn-str data))
 
 (deftype MongodbStore [collection-name auto-key-change?]
   ringstore/SessionStore
   (read-session [_ key] (if (nil? key) {} 
                 (if-let [entity (mng/find-one-as-map collection-name {:_id key})] 
-                  (read-string (:content entity)) {})))
+                   (read-string (:content entity)) {})))
   (write-session [_ key data]
                  (do  
-                   (let  [data (zipmap (map #(if (and (keyword? %) (namespace %))
-                             (-> % str (.substring 1)) %)
-                             (keys data))
-                             (vals data))
+                   (let  [;data (zipmap (map #(if (and (keyword? %) (namespace %))
+                          ;   (-> % str (.substring 1)) %)
+                          ;   (keys data))
+                          ;   (vals data))
                        entity (if (nil? key) nil (mng/find-one-as-map collection-name {:_id key}))
                        key-change? (or (= nil entity) auto-key-change?)
                        newkey (if key-change? (str (UUID/randomUUID)) key)]
